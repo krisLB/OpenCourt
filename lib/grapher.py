@@ -3,7 +3,7 @@ from networkx.readwrite import json_graph
 import json
 import re
 #import matplotlib.pyplot as plt
-import helper
+from . import helper
 
 #Class for converting Case Citations into Graph
 class GraphBuilder(object):
@@ -16,17 +16,18 @@ class GraphBuilder(object):
 
     def getYear(self, dat):
       """Extract the Year from the Case Date"""
-      if len(dat) > 1:
-        yrs = re.findall('(?<= )\d{1,4}$', dat)
+      if dat:
+        yrs = re.findall(r'(?<= )\d{1,4}$', dat)
         return int(yrs[0])
       else:
         return 0
 
     def drawGraph(self):
          """Build a Network graph from the citations in a json-derived dictionary"""
+         print('Grapher: Drawing network')
          G=nx.Graph()
          cD = self.caseDict
-         print "Number of Cases: " + str(len(cD))
+         print(f'   Number of Cases: {len(cD)}')
          #Iterate through cases to create Nodes and a volume dictionary to check cases against
          for case in cD:
               #nodeN= str(case['number'][0])
@@ -39,11 +40,12 @@ class GraphBuilder(object):
                   targ = str(cite)
                   G.add_edge(nodeN, targ)
 
-         if self.gml == 1 or self.gml == 2:
+         if self.gml in ['g','a']:
               nx.write_gml(G,'vis/'+self.outfile+'.gml')
               nx.write_gml(G,'vis/'+self.outfile+'.gml.gz')
-         if self.gml != 1:
+         if self.gml in ['j','a']:
               d = json_graph.node_link_data(G)
               json.dump(d, open('vis/'+self.outfile+'.json','w'))
          #nx.draw(G)
          #plt.savefig("network.png")
+         print('Grapher: Done')

@@ -1,7 +1,8 @@
 import smtplib
-import config
+from . import sample_config as config
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import datetime as dt
 
 def sendEmail(per, num, total, startTime):
     """Sends out periodic emails during the scraping processs"""
@@ -31,3 +32,12 @@ def emailSend(subject, text, smtpserver=config.server):
     server.login(config.user, config.passw)
     problems = server.sendmail(frm, to_add, message.as_string())
     server.quit()
+
+
+def convertDateFromString(strDate, strInputFormat = '%B %d, %Y'):
+    """Convert full representation of date to datetime object"""
+    try:
+        cDate = dt.datetime.strptime(strDate.trim(), strInputFormat)
+    except:
+        cDate = strDate
+    return cDate
